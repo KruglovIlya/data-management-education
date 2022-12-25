@@ -38,6 +38,22 @@ CREATE TABLE
 		CONSTRAINT movement_log_Id PRIMARY KEY (Id)
 	);
 
+CREATE TABLE
+	Bonuses (
+		Id SERIAL,
+		Title VARCHAR(255) NOT NULL,
+		Porecent INTEGER NOT NULL,
+		CONSTRAINT bonuse_Id PRIMARY KEY (Id)
+	);
+
+CREATE TABLE
+	ActiveBonuses (
+		Id SERIAL,
+		BonuseId INTEGER NOT NULL,
+		WorkerId INTEGER NOT NULL,
+		CONSTRAINT active_bonuse_id PRIMARY KEY (Id)
+	);
+
 -- Добавление внешних ключей
 ALTER TABLE Positions
 ADD CONSTRAINT department_of_position FOREIGN KEY (DepartmentId) REFERENCES Departments (Id);
@@ -50,3 +66,9 @@ ADD CONSTRAINT worker_of_movement_log FOREIGN KEY (WorkerId) REFERENCES Workers 
 
 ALTER TABLE MovementLog
 ADD CONSTRAINT next_position_of_movement_log FOREIGN KEY (NextPosition) REFERENCES Positions (Id);
+
+ALTER TABLE ActiveBonuses
+ADD CONSTRAINT bonuse_of_active_bonuse FOREIGN KEY (BonuseId) REFERENCES Bonuses (Id);
+
+ALTER TABLE ActiveBonuses
+ADD CONSTRAINT worker_of_active_bonuse FOREIGN KEY (WorkerId) REFERENCES Workers (Id);
