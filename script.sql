@@ -2,7 +2,7 @@
 CREATE TABLE
 	Departments (
 		Id SERIAL,
-		Title VARCHAR(20) NOT NULL,
+		Title VARCHAR(255) NOT NULL,
 		CONSTRAINT department_Id PRIMARY KEY (Id)
 	);
 
@@ -10,7 +10,7 @@ CREATE TABLE
 	Positions (
 		Id SERIAL,
 		DepartmentId INTEGER,
-		Title VARCHAR(20) NOT NULL,
+		Title VARCHAR(255) NOT NULL,
 		NumberOfPossibleWorkers INTEGER,
 		Salary MONEY NOT NULL,
 		CONSTRAINT position_Id PRIMARY KEY (Id)
@@ -19,12 +19,13 @@ CREATE TABLE
 CREATE TABLE
 	Workers (
 		Id SERIAL,
-		PositionId INTEGER NOT NULL,
 		DateOfBirth DATE NOT NULL,
 		Gender VARCHAR(20) NOT NULL,
 		Passport VARCHAR(20) NOT NULL,
 		Address VARCHAR(255) NOT NULL,
 		Phone VARCHAR(20) NOT NULL,
+		PositionId INTEGER NOT NULL,
+		FullName VARCHAR(255) not NULL,
 		CONSTRAINT worker_Id PRIMARY KEY (Id),
 		UNIQUE (Passport, Phone)
 	);
@@ -72,6 +73,92 @@ ADD CONSTRAINT bonuse_of_active_bonuse FOREIGN KEY (BonuseId) REFERENCES Bonuses
 
 ALTER TABLE ActiveBonuses
 ADD CONSTRAINT worker_of_active_bonuse FOREIGN KEY (WorkerId) REFERENCES Workers (Id);
+
+
+-- Загрузка данных
+INSERT INTO
+	Departments
+VALUES
+	(1, 'Отдел 1');
+
+INSERT INTO
+	Positions
+VALUES
+	(
+		1,
+		1,
+		'Должность 1 с 10 доступными местами',
+		10,
+		50000
+	);
+
+INSERT INTO
+	Workers
+VALUES
+	(
+		1,
+		1,
+		'10.10.2000',
+		'Мужчина',
+		'111111111',
+		'Место жительства сотрудника 1',
+		'899999999',
+		'Сотрудник 1'
+	);
+
+INSERT INTO
+	MovementLog
+VALUES
+	(
+		1,
+		1,
+		1,
+		'10.10.2022'
+	);
+
+
+INSERT INTO
+	Bonuses
+VALUES
+	(
+		1,
+		'Кандидат наук',
+		10
+	),
+	(
+		2,
+		'Доктор наук',
+		20
+	),
+	(
+		3,
+		'Секретность 3 уровня',
+		5
+	),
+	(
+		4,
+		'Секретность 2 уровня',
+		10
+	),
+	(
+		5,
+		'Секретность 1 уровня',
+		15
+	);
+
+INSERT INTO
+	ActiveBonuses
+VALUES
+	(
+		1,
+		1,
+		1
+	),
+	(
+		2,
+		4,
+		1
+	);
 
 -- Задача 2
 
@@ -134,3 +221,4 @@ EXECUTE FUNCTION checkpassport();
 
 
 -- В)
+
