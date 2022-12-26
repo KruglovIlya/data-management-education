@@ -246,3 +246,94 @@ CREATE OR REPLACE TRIGGER trigger_checkDeleteWorker
 BEFORE DELETE ON workers
 FOR EACH ROW
 EXECUTE FUNCTION checkDeleteWorker();
+
+-- Задача 3
+
+-- А) Определение является ли сотрудник юбиляром и возвращает его юбилейный возраст в этом году, если да
+
+CREATE OR REPLACE FUNCTION anniversary_check(integer) RETURNS integer
+as
+$BODY$
+declare
+	WorkerId integer;
+	Result integer;
+begin
+	WorkerId := $1;
+
+ 	select (date_part('year', CURRENT_DATE) - date_part('year', Workers.DateOfBirth)) 
+	into Result 
+	from Workers 
+	where 
+		WorkerId = Workers.Id 
+		and 
+		CAST((date_part('year', CURRENT_DATE) - date_part('year', Workers.DateOfBirth)) as INTEGER) % 10 = 0
+	;
+
+	return Result;
+END;
+$BODY$
+LANGUAGE plpgsql;
+
+-- Б) Определение количества прошедших лет месяцев и дней между двумя датами
+
+CREATE OR REPLACE FUNCTION time_between (date, date) RETURNS varchar(255)
+as
+$BODY$
+declare
+	dateA date;
+	dateB date;
+
+	Result varchar(255);
+begin
+	dateA := $1;
+	dateB := $2;
+
+	if dateB IS NULL THEN
+		dateB := CURRENT_DATE;
+	end if;
+
+ 	select age(dateB, dateA) into Result;
+
+	return Result;
+END;
+$BODY$
+LANGUAGE plpgsql;
+
+-- В) Получить всех юбиляров текущего года
+
+CREATE OR REPLACE FUNCTION get_ubilars () RETURNS TABLE(id integer, fullname character varying, dateOfBirth date, age integer)
+as
+$BODY$
+begin
+	RETURN QUERY
+        SELECT Workers.id, Workers.FullName, make_date(CAST(date_part('year', CURRENT_DATE) as INTEGER), CAST(extract(month from Workers.DateOfBirth) as INTEGER), CAST(extract(day from Workers.DateOfBirth) as INTEGER)), anniversary_check(Workers.id)
+        FROM Workers
+        WHERE anniversary_check(Workers.Id) IS NOT NULL;
+
+END;
+$BODY$
+LANGUAGE plpgsql;
+
+
+-- Г) Получить количество вакантных мест на должность 
+
+CREATE OR REPLACE FUNCTION get_number_of_vacancies(integer) RETURNS integer
+as
+$BODY$
+declare
+	vacancyId integer;
+	countWorkersForVacancy integer;
+	numberOfPossibleWorkers integer; 
+begin
+	vacancyId := $1;
+
+	select COUNT(DISTINCT Workers.id) into countWorkersForVacancy from Workers where Workers.PositionId = vacancyId;
+
+	select Positions.NumberOfPossibleWorkers into numberOfPossibleWorkers from Positions where Positions.Id = vacancyId;
+
+	RETURN numberOfPossibleWorkers - countWorkersForVacancy; 
+
+END;
+$BODY$
+LANGUAGE plpgsql;
+
