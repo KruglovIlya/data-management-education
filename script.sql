@@ -313,3 +313,27 @@ begin
 END;
 $BODY$
 LANGUAGE plpgsql;
+
+
+-- Г) Получить количество вакантных мест на должность 
+
+CREATE OR REPLACE FUNCTION get_number_of_vacancies(integer) RETURNS integer
+as
+$BODY$
+declare
+	vacancyId integer;
+	countWorkersForVacancy integer;
+	numberOfPossibleWorkers integer; 
+begin
+	vacancyId := $1;
+
+	select COUNT(DISTINCT Workers.id) into countWorkersForVacancy from Workers where Workers.PositionId = vacancyId;
+
+	select Positions.NumberOfPossibleWorkers into numberOfPossibleWorkers from Positions where Positions.Id = vacancyId;
+
+	RETURN numberOfPossibleWorkers - countWorkersForVacancy; 
+
+END;
+$BODY$
+LANGUAGE plpgsql;
+
