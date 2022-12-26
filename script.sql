@@ -246,3 +246,30 @@ CREATE OR REPLACE TRIGGER trigger_checkDeleteWorker
 BEFORE DELETE ON workers
 FOR EACH ROW
 EXECUTE FUNCTION checkDeleteWorker();
+
+-- Задача 3
+
+-- А) Определение является ли сотрудник юбиляром и возвращает его юбилейный возраст в этом году, если да
+
+CREATE OR REPLACE FUNCTION anniversary_check(integer) RETURNS integer
+as
+$BODY$
+declare
+	WorkerId integer;
+	Result integer;
+begin
+	WorkerId := $1;
+
+ 	select (date_part('year', CURRENT_DATE) - date_part('year', Workers.DateOfBirth)) 
+	into Result 
+	from Workers 
+	where 
+		WorkerId = Workers.Id 
+		and 
+		CAST((date_part('year', CURRENT_DATE) - date_part('year', Workers.DateOfBirth)) as INTEGER) % 10 = 0
+	;
+
+	return Result;
+END;
+$BODY$
+LANGUAGE plpgsql;
