@@ -298,3 +298,18 @@ begin
 END;
 $BODY$
 LANGUAGE plpgsql;
+
+-- В) Получить всех юбиляров текущего года
+
+CREATE OR REPLACE FUNCTION get_ubilars () RETURNS TABLE(id integer, fullname character varying, dateOfBirth date, age integer)
+as
+$BODY$
+begin
+	RETURN QUERY
+        SELECT Workers.id, Workers.FullName, make_date(CAST(date_part('year', CURRENT_DATE) as INTEGER), CAST(extract(month from Workers.DateOfBirth) as INTEGER), CAST(extract(day from Workers.DateOfBirth) as INTEGER)), anniversary_check(Workers.id)
+        FROM Workers
+        WHERE anniversary_check(Workers.Id) IS NOT NULL;
+
+END;
+$BODY$
+LANGUAGE plpgsql;
