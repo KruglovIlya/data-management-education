@@ -73,3 +73,88 @@ ADD CONSTRAINT bonuse_of_active_bonuse FOREIGN KEY (BonuseId) REFERENCES Bonuses
 
 ALTER TABLE ActiveBonuses
 ADD CONSTRAINT worker_of_active_bonuse FOREIGN KEY (WorkerId) REFERENCES Workers (Id);
+
+-- Загрузка данных
+INSERT INTO
+	Departments
+VALUES
+	(1, 'Отдел 1');
+
+INSERT INTO
+	Positions
+VALUES
+	(
+		1,
+		1,
+		'Должность 1 с 10 доступными местами',
+		10,
+		50000
+	);
+
+INSERT INTO
+	Workers
+VALUES
+	(
+		1,
+		1,
+		'10.10.2000',
+		'Мужчина',
+		'111111111',
+		'Место жительства сотрудника 1',
+		'899999999',
+		'Сотрудник 1'
+	);
+
+INSERT INTO
+	MovementLog
+VALUES
+	(
+		1,
+		1,
+		1,
+		'10.10.2022'
+	);
+
+
+INSERT INTO
+	Bonuses
+VALUES
+	(
+		1,
+		'Кандидат наук',
+		10
+	),
+	(
+		2,
+		'Доктор наук',
+		20
+	),
+	(
+		3,
+		'Секретность 3 уровня',
+		5
+	),
+	(
+		4,
+		'Секретность 2 уровня',
+		10
+	),
+	(
+		5,
+		'Секретность 1 уровня',
+		15
+	);
+
+INSERT INTO
+	ActiveBonuses
+VALUES
+	(
+		1,
+		1,
+		1
+	),
+	(
+		2,
+		4,
+		1
+	);
