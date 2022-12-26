@@ -222,7 +222,7 @@ FOR EACH ROW
 EXECUTE FUNCTION checkpassport();
 
 
--- В) Запрет удаления записи о работнике без приказа о увольнении
+-- В) Запрет удаления записей о работнике без приказа о увольнении
 
 CREATE OR REPLACE FUNCTION checkDeleteWorker() RETURNS trigger AS
 $$
@@ -235,7 +235,9 @@ begin
 		RAISE 'Для удаления нужна запись о увольнении работника в таблице MovementLog с NextPosition=0;';
 	end if;
 
-	RETURN NEW;
+	delete from MovementLog where OLD.Id = MovementLog.WorkerId;
+
+	RETURN OLD;
 END;
 $$ 
 LANGUAGE plpgsql;
