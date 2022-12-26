@@ -273,3 +273,28 @@ begin
 END;
 $BODY$
 LANGUAGE plpgsql;
+
+-- Б) Определение количества прошедших лет месяцев и дней между двумя датами
+
+CREATE OR REPLACE FUNCTION time_between (date, date) RETURNS varchar(255)
+as
+$BODY$
+declare
+	dateA date;
+	dateB date;
+
+	Result varchar(255);
+begin
+	dateA := $1;
+	dateB := $2;
+
+	if dateB IS NULL THEN
+		dateB := CURRENT_DATE;
+	end if;
+
+ 	select age(dateB, dateA) into Result;
+
+	return Result;
+END;
+$BODY$
+LANGUAGE plpgsql;
