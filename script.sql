@@ -35,7 +35,7 @@ CREATE TABLE
 	MovementLog (
 		Id SERIAL,
 		WorkerId INTEGER NOT NULL,
-		NextPosition INTEGER NOT NULL,
+		NextPosition INTEGER,
 		DateOfMove DATE NOT NULL,
 		CONSTRAINT movement_log_Id PRIMARY KEY (Id)
 	);
@@ -222,5 +222,25 @@ FOR EACH ROW
 EXECUTE FUNCTION checkpassport();
 
 
--- В)
+-- В) Запрет удаления записи о работнике без приказа о увольнении
 
+CREATE OR REPLACE FUNCTION checkDeleteWorker() RETURNS trigger AS
+$$
+declare
+	MovementLogId integer;
+begin
+	select id into MovementLogId from MovementLog where OLD.Id = MovementLog.WorkerId AND MovementLog.NextPosition IS NULL;
+
+	if MovementLogId IS NULL THEN
+		RAISE 'Для удаления нужна запись о увольнении работника в таблице MovementLog с NextPosition=0;';
+	end if;
+
+	RETURN NEW;
+END;
+$$ 
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER trigger_checkDeleteWorker
+BEFORE DELETE ON workers
+FOR EACH ROW
+EXECUTE FUNCTION checkDeleteWorker();
