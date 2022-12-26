@@ -74,6 +74,7 @@ ADD CONSTRAINT bonuse_of_active_bonuse FOREIGN KEY (BonuseId) REFERENCES Bonuses
 ALTER TABLE ActiveBonuses
 ADD CONSTRAINT worker_of_active_bonuse FOREIGN KEY (WorkerId) REFERENCES Workers (Id);
 
+
 -- Загрузка данных
 INSERT INTO
 	Departments
@@ -158,3 +159,66 @@ VALUES
 		4,
 		1
 	);
+
+-- Задача 2
+
+-- А)
+
+-- Создание универсальной функции для использования в триггерах заполнения значений первичного ключа для всех таблиц
+CREATE OR REPLACE FUNCTION setID() RETURNS TRIGGER AS $$
+DECLARE
+   max_id INT;
+BEGIN
+	EXECUTE 'SELECT COALESCE(MAX(id), 0) FROM ' || TG_TABLE_NAME INTO max_id;
+	NEW.id := max_id + 1;
+	RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Создание триггера заполнения значений первичного ключа для таблицы departments
+CREATE OR REPLACE TRIGGER setID_departments
+BEFORE INSERT ON departments
+FOR EACH ROW
+EXECUTE FUNCTION setID();
+
+-- Создание триггера заполнения значений первичного ключа для таблицы movementlog
+CREATE OR REPLACE TRIGGER setID_movementlog
+BEFORE INSERT ON movementlog
+FOR EACH ROW
+EXECUTE FUNCTION setID();
+
+-- Создание триггера заполнения значений первичного ключа для таблицы positions
+CREATE OR REPLACE TRIGGER setID_positions
+BEFORE INSERT ON positions
+FOR EACH ROW
+EXECUTE FUNCTION setID();
+
+-- Создание триггера заполнения значений первичного ключа для таблицы workers
+CREATE OR REPLACE TRIGGER setID_workers
+BEFORE INSERT ON workers
+FOR EACH ROW
+EXECUTE FUNCTION setID();
+
+-- Б) 
+-- Создание процедуры для использования в триггере проверки данных паспорта
+CREATE OR REPLACE FUNCTION checkPassport() RETURNS trigger AS $$
+begin
+	if REGEXP_MATCH(NEW.PassportSeries, '^\d{4}$') IS NULL THEN
+		RAISE 'Некорректное значение серии паспорта;';
+	end if;
+	if REGEXP_MATCH(NEW.PassportNumber, '^\d{6}$') IS NULL THEN
+		RAISE  'Некорректное значение номера паспорта;';
+	end if;
+	RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Создание триггера заполнения значений первичного ключа для таблицы workers
+CREATE OR REPLACE TRIGGER checkPassport_workers
+BEFORE INSERT ON workers
+FOR EACH ROW
+EXECUTE FUNCTION checkpassport();
+
+
+-- В)
+
