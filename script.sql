@@ -28,7 +28,7 @@ CREATE TABLE
 		PositionId INTEGER NOT NULL,
 		FullName VARCHAR(255) not NULL,
 		CONSTRAINT worker_Id PRIMARY KEY (Id),
-		UNIQUE (Passport, Phone)
+		UNIQUE (Phone)
 	);
 
 CREATE TABLE
