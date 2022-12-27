@@ -1,3 +1,5 @@
+-- Задача 1
+
 -- Создание таблиц
 CREATE TABLE
 	Departments (

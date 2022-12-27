@@ -31,6 +31,8 @@ https://drive.google.com/file/d/12-1XkIgv3KsH4vUdFRDuny22ARyq0VSR/view?usp=shari
 
 ## Код
 ```SQL
+-- Задача 1
+
 -- Создание таблиц
 CREATE TABLE
 	Departments (
@@ -131,13 +133,13 @@ INSERT INTO
 VALUES
 	(
 		1,
-		1,
 		'10.10.2000',
 		'Мужчина',
 		'1111',
 		'222222',
 		'Место жительства сотрудника 1',
 		'899999999',
+		1,
 		'Сотрудник 1'
 	);
 
@@ -369,7 +371,5 @@ begin
 END;
 $BODY$
 LANGUAGE plpgsql;
-
-
 
 ```
